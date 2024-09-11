@@ -1,18 +1,14 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from dotenv import load_dotenv
+from .forms import UserRegistrationForm
 import os
 load_dotenv()
 
 def index(request):
     return render(request, 'index.html')
 
-from django.shortcuts import render, redirect
-from django.contrib.auth import login
-from .forms import UserRegistrationForm
 
 def register_view(request):
     if request.method == 'POST':
@@ -47,3 +43,6 @@ def login_view(request):
         else:
             return render(request, 'registration/login.html', {'error': 'Invalid username or password'})
     return render(request, 'registration/login.html')
+
+def profile_view(request):
+    return render(request, 'profile.html')
