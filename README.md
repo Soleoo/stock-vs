@@ -35,7 +35,7 @@ Stock-VS is an advanced inventory management software that uses cutting-edge tec
 
     ```bash
     python 3.9.19
-    pip install Django
+    pip install -r requirements.txt
     ```
 
 5. Start the application:
