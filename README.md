@@ -30,14 +30,18 @@ Stock-VS is an advanced inventory management software that uses cutting-edge tec
     ```bash
     cd stock-vs
     ```
-    
 3. Install the dependencies:
 
     ```bash
     python 3.9.19
     pip install -r requirements.txt
     ```
+4. Migrate models
 
+    ```bash
+    python manage.py makemigrations
+    python manage.py migrate
+    ```
 5. Start the application:
     
     ```bash
