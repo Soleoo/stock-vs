@@ -2,8 +2,10 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.core.mail import send_mail
 from dotenv import load_dotenv
+import requests
 from .forms import UserRegistrationForm
 import os
+import random
 load_dotenv()
 
 def index(request):
@@ -16,6 +18,7 @@ def register_view(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
+            
             send_mail(
                 subject='Registration Successful',
                 message=f'Hello, {user.username},\n\n'
@@ -27,6 +30,25 @@ def register_view(request):
                 recipient_list=[user.email],
                 fail_silently=False
             )
+            
+            if 'face_image' in request.FILES:
+                image_file = request.FILES['face_image']
+                api_url = 'http://localhost:8080/upload'
+                with image_file.open('rb') as f:
+                    files = {'file': f}
+                    payload = {
+                        'user_id': random.randint(100000, 999999)
+                    }
+                    response = requests.post(api_url, files=files, data=payload)
+                
+                if response.status_code == 200:
+                    print("Image successfully sent to API")
+                    print('[RESPONSE]', response.json())
+                else:
+                    print("Failed to send image to API")
+                    print("[STATUS CODE]", response.status_code)
+                    print("[RESPONSE CONTENT]", response.content)
+            
             return redirect('index')
     else:
         form = UserRegistrationForm()

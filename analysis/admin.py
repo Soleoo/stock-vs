@@ -6,13 +6,22 @@ from .forms import UserRegistrationForm
 class UserAdmin(BaseUserAdmin):
     form = UserRegistrationForm
 
-    list_display = ('username', 'email', 'is_staff')
-    list_filter = ('is_staff',)
+    list_display = ('username', 'email', 'full_name', 'phone_number', 'role', 'access_level', 'is_active', 'is_staff', 'is_superuser')
+    list_filter = ('is_staff', 'is_active', 'role')
     fieldsets = (
-        (None, {'fields': ('username', 'email', 'password', 'face_image')}),
-        ('Permissions', {'fields': ('is_staff', 'is_superuser', 'groups', 'user_permissions')}),
+        (None, {'fields': ('username', 'email', 'password', 'full_name', 'phone_number', 'face_image')}),
+        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
+        ('Role and Access', {'fields': ('role', 'access_level')}),
+        ('Important dates', {'fields': ('last_login', 'last_recognition_time', 'created_at')}),
     )
-    search_fields = ('username', 'email')
+    readonly_fields = ('created_at',)
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('username', 'email', 'full_name', 'password1', 'password2', 'role', 'access_level'),
+        }),
+    )
+    search_fields = ('username', 'email', 'full_name')
     ordering = ('username',)
     filter_horizontal = ('groups', 'user_permissions')
 
