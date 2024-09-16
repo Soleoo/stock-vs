@@ -37,6 +37,7 @@ class User(AbstractBaseUser):
     profile_picture = models.ImageField(upload_to='profiles/', null=True, blank=True)
     role = models.CharField(max_length=50, choices=ROLE_CHOICES)
     access_level = models.IntegerField(default=1)
+    user_id = models.IntegerField(default=0)
     last_recognition_time = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(null=True, blank=True)

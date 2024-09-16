@@ -6,10 +6,10 @@ from .forms import UserRegistrationForm
 class UserAdmin(BaseUserAdmin):
     form = UserRegistrationForm
 
-    list_display = ('username', 'email', 'full_name', 'phone_number', 'role', 'access_level', 'is_active', 'is_staff', 'is_superuser')
+    list_display = ('username', 'email', 'full_name', 'phone_number', 'role', 'access_level', 'user_id', 'is_active', 'is_staff', 'is_superuser')
     list_filter = ('is_staff', 'is_active', 'role')
     fieldsets = (
-        (None, {'fields': ('username', 'email', 'password', 'full_name', 'phone_number', 'face_image')}),
+        (None, {'fields': ('username', 'email', 'password', 'full_name', 'phone_number', 'face_image', 'user_id')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         ('Role and Access', {'fields': ('role', 'access_level')}),
         ('Important dates', {'fields': ('last_login', 'last_recognition_time', 'created_at')}),
@@ -18,7 +18,7 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('username', 'email', 'full_name', 'password1', 'password2', 'role', 'access_level'),
+            'fields': ('username', 'email', 'full_name', 'password1', 'password2', 'role', 'access_level', 'user_id'),
         }),
     )
     search_fields = ('username', 'email', 'full_name')

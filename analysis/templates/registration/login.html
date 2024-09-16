@@ -11,7 +11,7 @@
                     <h2 class="font-weight-bold mb-0">Login</h2>
                 </div>
                 <div class="card-body p-4">
-                    <form method="post" class="needs-validation" novalidate>
+                    <form id="login-form" action="{% url 'login' %}" method="post" class="needs-validation" novalidate enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="mb-3 text-center">
                             <label for="id_email" class="form-label text-muted">Email</label>
@@ -21,6 +21,22 @@
                             <label for="id_password" class="form-label text-muted">Password</label>
                             <input type="password" class="form-control" id="id_password" name="password" required>
                         </div>
+                        <div id="camera-options" class="mb-3 text-center">
+                            <label class="form-label text-muted">Or login with face recognition</label>
+                            <div>
+                                <button type="button" class="btn btn-secondary" id="start-camera">Open Camera</button>
+                            </div>
+                            <div id="camera" style="display: none;">
+                                <video id="video" width="100%" height="auto" autoplay></video>
+                                <button type="button" class="btn btn-danger mt-2" id="click-photo">Take Photo</button>
+                            </div>
+                            <canvas id="canvas" style="display: none;"></canvas>
+                            <input type="hidden" name="face_image" id="face_image">
+                            <div id="photo-taken-message" class="alert alert-success mt-2" style="display: none;">
+                                Photo taken successfully!
+                            </div>
+                        </div>
+                        <div id="api-feedback" class="alert" style="display: none;"></div>
                         {% if error %}
                             <div class="alert alert-danger" role="alert">
                                 {{ error }}
@@ -70,4 +86,37 @@
         margin-bottom: 0.5rem;
     }
 </style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const startCameraButton = document.getElementById('start-camera');
+        const video = document.getElementById('video');
+        const clickPhotoButton = document.getElementById('click-photo');
+        const canvas = document.getElementById('canvas');
+        const faceImageInput = document.getElementById('face_image');
+        const cameraDiv = document.getElementById('camera');
+        const photoTakenMessage = document.getElementById('photo-taken-message');
+
+        let stream;
+
+        startCameraButton.addEventListener('click', async function() {
+            stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = stream;
+            cameraDiv.style.display = 'block';
+        });
+
+        clickPhotoButton.addEventListener('click', function() {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            const dataURL = canvas.toDataURL('image/png');
+            faceImageInput.value = dataURL;
+            stream.getTracks().forEach(track => track.stop());
+            cameraDiv.style.display = 'none';
+            photoTakenMessage.style.display = 'block';
+        });
+    });
+</script>
 {% endblock %}
