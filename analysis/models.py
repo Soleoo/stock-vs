@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Group, Permission
 from django.utils.translation import gettext_lazy as _
+from django.core.exceptions import ValidationError
 
 class UserManager(BaseUserManager):
     def create_user(self, email, full_name, password=None, **extra_fields):
@@ -61,6 +62,13 @@ class User(AbstractBaseUser):
             self.is_staff = True
             self.is_superuser = True
         super(User, self).save(*args, **kwargs)
+
+    def clean(self):
+        super().clean()
+        if self.role == 'Staff' and not self.face_image:
+            raise ValidationError(_('Face image is required for staff members.'))
+        if self.role == 'Admin' and not self.face_image:
+            raise ValidationError(_('Face image is required for admin members.'))
 
     def has_module_perms(self, app_label):
         if self.role == 'Admin':

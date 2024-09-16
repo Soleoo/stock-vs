@@ -9,7 +9,7 @@ class UserAdmin(BaseUserAdmin):
     list_display = ('username', 'email', 'is_staff')
     list_filter = ('is_staff',)
     fieldsets = (
-        (None, {'fields': ('username', 'email', 'password')}),
+        (None, {'fields': ('username', 'email', 'password', 'face_image')}),
         ('Permissions', {'fields': ('is_staff', 'is_superuser', 'groups', 'user_permissions')}),
     )
     search_fields = ('username', 'email')

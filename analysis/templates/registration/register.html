@@ -11,10 +11,10 @@
                     <h2 class="font-weight-bold mb-0">Join Stock-VS</h2>
                 </div>
                 <div class="card-body p-4">
-                    <form action="{% url 'register' %}" method="post" class="needs-validation" novalidate>
+                    <form action="{% url 'register' %}" method="post" class="needs-validation" novalidate enctype="multipart/form-data">
                         {% csrf_token %}
                         {% for field in form %}
-                            <div class="mb-3 text-center">
+                            <div class="mb-3 text-center" id="div_{{ field.name }}">
                                 <label for="{{ field.id_for_label }}" class="form-label text-muted">{{ field.label }}</label>
                                 {{ field }}
                                 {% if field.errors %}
@@ -24,6 +24,18 @@
                                 {% endif %}
                             </div>
                         {% endfor %}
+                        <div id="camera-options" class="mb-3 text-center" style="display: none;">
+                            <label class="form-label text-muted">Or take a photo</label>
+                            <div>
+                                <button type="button" class="btn btn-secondary" id="start-camera">Open Camera</button>
+                            </div>
+                            <div id="camera" style="display: none;">
+                                <video id="video" width="100%" height="auto" autoplay></video>
+                                <button type="button" class="btn btn-danger mt-2" id="click-photo">Take Photo</button>
+                            </div>
+                            <canvas id="canvas" style="display: none;"></canvas>
+                            <input type="hidden" name="photo_data" id="photo_data">
+                        </div>
                         <div class="d-grid gap-2 mt-4">
                             <button type="submit" class="btn btn-primary btn-lg">Create Account</button>
                         </div>
@@ -68,4 +80,101 @@
         margin-bottom: 0.5rem;
     }
 </style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const roleField = document.getElementById('{{ form.role.id_for_label }}');
+        const faceImageField = document.getElementById('div_{{ form.face_image.name }}');
+        const cameraOptions = document.getElementById('camera-options');
+        const startCameraButton = document.getElementById('start-camera');
+        const camera = document.getElementById('camera');
+        const video = document.getElementById('video');
+        const clickPhotoButton = document.getElementById('click-photo');
+        const canvas = document.getElementById('canvas');
+        const photoDataInput = document.getElementById('photo_data');
+
+        function toggleFaceImageField() {
+            if (roleField.value === 'Staff' || roleField.value === 'Admin') {
+                faceImageField.style.display = 'block';
+                cameraOptions.style.display = 'block';
+            } else {
+                faceImageField.style.display = 'none';
+                cameraOptions.style.display = 'none';
+            }
+        }
+
+        roleField.addEventListener('change', toggleFaceImageField);
+        toggleFaceImageField();
+
+        startCameraButton.addEventListener('click', function() {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function(stream) {
+                    camera.style.display = 'block';
+                    video.srcObject = stream;
+                })
+                .catch(function(err) {
+                    console.error("Error accessing camera: " + err);
+                });
+        });
+
+        clickPhotoButton.addEventListener('click', function() {
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const photoData = canvas.toDataURL('image/png');
+            photoDataInput.value = photoData;
+            
+            const img = document.createElement('img');
+            img.src = photoData;
+            img.style.width = '100%';
+            camera.innerHTML = '';
+            camera.appendChild(img);
+            
+            video.srcObject.getTracks().forEach(track => track.stop());
+        });
+
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            if (photoDataInput.value) {
+                const photoBlob = dataURItoBlob(photoDataInput.value);
+                const formData = new FormData(form);
+                formData.set('face_image', photoBlob, 'face_image.png');
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        window.location.href = '/';
+                    } else {
+                        console.error('Form submission failed');
+                    }
+                }).catch(error => {
+                    console.error('Error:', error);
+                });
+            } else {
+                form.submit();
+            }
+        });
+
+        function dataURItoBlob(dataURI) {
+            const byteString = atob(dataURI.split(',')[1]);
+            const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+            const ab = new ArrayBuffer(byteString.length);
+            const ia = new Uint8Array(ab);
+            for (let i = 0; i < byteString.length; i++) {
+                ia[i] = byteString.charCodeAt(i);
+            }
+            return new Blob([ab], {type: mimeString});
+        }
+    });
+</script>
 {% endblock %}
