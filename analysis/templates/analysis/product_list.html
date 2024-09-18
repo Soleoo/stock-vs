@@ -21,7 +21,6 @@
                     <h5 class="card-title">{{ product.name }}</h5>
                     <p class="card-text">Price: R${{ product.price }}</p>
                     <p class="card-text">In stock: {{ product.item_count }}</p>
-                    <a href="{% url 'product_detail' product.pk %}" class="btn btn-primary">Details</a>
                     <a href="{% url 'product_update' product.pk %}" class="btn btn-secondary">Edit</a>
                     <a href="{% url 'product_delete' product.pk %}" class="btn btn-danger">Delete</a>
                   </div>
