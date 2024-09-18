@@ -1,0 +1,110 @@
+{% extends "layout.html" %}
+
+{% block title %}{% if form.instance.pk %}Edit{% else %}Create{% endif %} Product Item - Stock-VS{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center align-items-center min-vh-100">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h2 class="font-weight-bold mb-0">{% if form.instance.pk %}Edit{% else %}Create{% endif %} Product Item</h2>
+                </div>
+                <div class="card-body p-4">
+
+                    <form id="product-item-form" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        {% for field in form %}
+                            <div class="mb-3 text-center" id="div_{{ field.name }}">
+                                <label for="{{ field.id_for_label }}" class="form-label text-muted">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ field.errors|join:", " }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        <div id="qr_code_display" class="mb-3 text-center"></div>
+                        {% if form.instance.qr_code %}
+                            <div class="mb-3 text-center">
+                                <label for="qr_code" class="form-label text-muted">QR Code</label>
+                                <img src="{{ form.instance.qr_code.url }}" alt="QR Code" class="img-fluid">
+                            </div>
+                        {% endif %}
+                        <div class="d-grid gap-2 mt-4">
+
+                            <button id="submit-button" type="submit" class="btn btn-primary btn-lg">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('id_product').addEventListener('change', function() {
+    var productId = this.value;
+    if (productId) {
+        fetch(`/generate_serial_and_qrcode/?product_id=${productId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    document.getElementById('id_serial_number').value = data.serial_number;
+                    var qrCodeImage = document.createElement('img');
+                    qrCodeImage.src = data.qr_code_url;
+                    var qrCodeDisplay = document.getElementById('qr_code_display');
+                    qrCodeDisplay.innerHTML = '';
+                    qrCodeDisplay.appendChild(qrCodeImage);
+
+                    var qrCodeInput = document.createElement('input');
+                    qrCodeInput.type = 'hidden';
+                    qrCodeInput.name = 'qr_code_url';
+                    qrCodeInput.value = data.qr_code_url;
+                    qrCodeDisplay.appendChild(qrCodeInput);
+                }
+            });
+    }
+});
+
+document.getElementById('product-item-form').addEventListener('submit', function(event) {
+    var submitButton = document.getElementById('submit-button');
+    submitButton.disabled = true;
+});
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+    .card {
+        transition: all 0.3s ease-in-out;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important;
+    }
+    .form-control {
+        border-radius: 0.25rem;
+    }
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+        transition: all 0.2s ease-in-out;
+    }
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+        transform: translateY(-2px);
+    }
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+</style>
+{% endblock %}

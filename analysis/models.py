@@ -80,3 +80,28 @@ class User(AbstractBaseUser):
         if self.role == 'Admin':
             return True
         return self.is_superuser
+
+class Product(models.Model):
+    name = models.CharField(max_length=255, verbose_name=_("Name"))
+    description = models.TextField(verbose_name=_("Description"))
+    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_("Price"))
+    stock = models.PositiveIntegerField(verbose_name=_("Stock"), null=True, blank=True)
+    image = models.ImageField(upload_to='./media/product_images/', verbose_name=_("Product Image"), null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created At"))
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=_("Updated At"))
+
+    def __str__(self):
+        return self.name
+
+    def item_count(self):
+        return self.items.count()
+    
+class ProductItem(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='items', verbose_name=_("Product"))
+    serial_number = models.CharField(max_length=255, unique=True, verbose_name=_("Serial Number"))
+    qr_code = models.ImageField(upload_to='./media/qr_codes/', verbose_name=_("QR Code"))
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created At"))
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=_("Updated At"))
+
+    def __str__(self):
+        return f"{self.product.name} - {self.serial_number}"

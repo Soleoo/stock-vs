@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User
+from .models import User, Product, ProductItem
 from .forms import UserRegistrationForm
 
 class UserAdmin(BaseUserAdmin):
@@ -35,3 +35,26 @@ if admin.site.is_registered(User):
     admin.site.unregister(User)
 
 admin.site.register(User, UserAdmin)
+
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ('name', 'description', 'price', 'stock', 'created_at', 'updated_at')
+    search_fields = ('name', 'description')
+    list_filter = ('created_at', 'updated_at')
+
+    def delete_selected_users(self, request, queryset):
+        for item in queryset:
+            item.delete()
+
+@admin.register(ProductItem)
+class ProductItemAdmin(admin.ModelAdmin):
+    list_display = ('product', 'serial_number', 'created_at', 'updated_at')
+    search_fields = ('serial_number',)
+    list_filter = ('created_at', 'updated_at')
+    raw_id_fields = ('product',)
+
+    actions = ['delete_selected_users']
+
+    def delete_selected_users(self, request, queryset):
+        for item in queryset:
+            item.delete()

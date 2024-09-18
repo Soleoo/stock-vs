@@ -1,5 +1,5 @@
 from django import forms
-from .models import User
+from .models import User, Product, ProductItem
 
 class UserRegistrationForm(forms.ModelForm):
     password = forms.CharField(label='Password', widget=forms.PasswordInput(attrs={'class': 'form-control'}))
@@ -22,3 +22,25 @@ class UserRegistrationForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+class ProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = ['name', 'description', 'price', 'image']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control'}),
+            'price': forms.NumberInput(attrs={'class': 'form-control'}),
+            'image': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+        }
+
+class ProductItemForm(forms.ModelForm):
+    qr_code_url = forms.CharField(widget=forms.HiddenInput(), required=False)
+
+    class Meta:
+        model = ProductItem
+        fields = ['product', 'serial_number', 'qr_code_url']
+        widgets = {
+            'product': forms.Select(attrs={'class': 'form-control'}),
+            'serial_number': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+        }

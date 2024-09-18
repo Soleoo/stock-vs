@@ -1,0 +1,95 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center align-items-center min-vh-100">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h2 class="font-weight-bold mb-0">{% if form.instance.pk %}Edit{% else %}Create{% endif %} Product</h2>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        {% for field in form %}
+                            <div class="mb-3 text-center" id="div_{{ field.name }}">
+                                <label for="{{ field.id_for_label }}" class="form-label text-muted">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ field.errors|join:", " }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_css %}
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+    .card {
+        transition: all 0.3s ease-in-out;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important;
+    }
+    .form-control {
+        border-radius: 0.25rem;
+    }
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+        transition: all 0.2s ease-in-out;
+    }
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+        transform: translateY(-2px);
+    }
+    .btn-secondary {
+        background-color: #6c757d;
+        border-color: #6c757d;
+        transition: all 0.2s ease-in-out;
+    }
+    .btn-secondary:hover {
+        background-color: #555e66;
+        border-color: #555e66;
+        transform: translateY(-2px);
+    }
+    .btn-danger {
+        background-color: #dc3545;
+        border-color: #dc3545;
+        transition: all 0.2s ease-in-out;
+    }
+    .btn-danger:hover {
+        background-color: #bd2130;
+        border-color: #bd2130;
+        transform: translateY(-2px);
+    }
+    .list-group {
+        width: 100%;
+    }
+    .list-group-item {
+        border-radius: 0.25rem;
+        transition: all 0.2s ease-in-out;
+    }
+    .list-group-item:hover {
+        background-color: #f8f9fa;
+        transform: translateY(-2px);
+    }
+    .img-thumbnail {
+        border-radius: 0.25rem;
+    }
+</style>
+{% endblock %}

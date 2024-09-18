@@ -1,0 +1,23 @@
+
+{% extends "layout.html" %}
+
+{% block title %}Product Item Detail{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Product Item Detail</h1>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">{{ item.product.name }}</h5>
+            <p class="card-text"><strong>Serial Number:</strong> {{ item.serial_number }}</p>
+            <p class="card-text"><strong>Created At:</strong> {{ item.created_at }}</p>
+            <p class="card-text"><strong>Updated At:</strong> {{ item.updated_at }}</p>
+            {% if item.qr_code %}
+                <p class="card-text"><strong>QR Code:</strong></p>
+                <img src="{{ item.qr_code.url }}" alt="QR Code" class="img-fluid">
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
