@@ -20,8 +20,11 @@ urlpatterns = [
     path('product-items/create/', views.product_item_create, name='product_item_create'),
     path('product-items/<str:serial_number>/', views.product_item_detail, name='product_items_detail'),
     path('product-items/<int:pk>/edit/', views.product_item_update, name='product_item_update'),
-    path('product-items/<int:pk>/delete/', views.product_item_delete, name='product_item_delete'),
+    path('product-items/<str:serial_number>/delete/', views.product_item_delete, name='product_item_delete'),
     path('generate_serial_and_qrcode/', views.generate_serial_and_qrcode, name='generate_serial_and_qrcode'),
+    path('movements/', views.movements, name='movements'),
+    path('reports/', views.reports, name='reports'),
+    path('settings/', views.settings, name='settings'),
     path('scan-qrcode/', views.scan_qrcode, name='scan_qrcode')
 ]
 if settings.DEBUG:

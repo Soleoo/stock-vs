@@ -18,6 +18,11 @@
                     No QR Code available
                   {% endif %}
                 </p>
+                <form method="POST" action="{% url 'product_item_delete' item.serial_number %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="serial_number" value="{{ item.serial_number }}">
+                  <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
               </div>
             </div>
           </a>

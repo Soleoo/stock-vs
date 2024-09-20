@@ -187,11 +187,18 @@ def product_item_update(request, pk):
         form = ProductItemForm(instance=item)
     return render(request, 'analysis/product_item_form.html', {'form': form})
 
-def product_item_delete(request, pk):
-    item = get_object_or_404(ProductItem, pk=pk)
+def product_item_delete(request, serial_number):
+    item = get_object_or_404(ProductItem, serial_number=serial_number)
     if request.method == 'POST':
-        item.delete()
-        return redirect(reverse('product_item_list'))
+        product_id = item.product.id
+        api_url = os.environ.get('API_DELETE_ITEM').replace('{serial_number}', serial_number)
+        response = requests.delete(api_url)
+        
+        if response.status_code == 200:
+            item.delete()
+            return redirect(reverse('product_item_list', kwargs={'product_id': product_id}))
+        else:
+            return JsonResponse({'error': 'Failed to delete item via API', 'status_code': response.status_code}, status=response.status_code)
     return render(request, 'analysis/product_item_confirm_delete.html', {'item': item})
 
 
@@ -209,6 +216,7 @@ def generate_serial_and_qrcode(request):
     
     qr_code_api_url = os.environ.get('API_QR_GEN_URL')
     qr_code_response = requests.post(qr_code_api_url, json={'serial_number': new_serial})
+    print(qr_code_response)
     
     if qr_code_response.status_code == 200:
         qr_code_image_base64 = qr_code_response.json().get('qr_code')
@@ -235,12 +243,17 @@ def generate_serial_and_qrcode(request):
 def scan_qrcode(request):
     if request.method == 'POST':
         image_data = request.POST.get('image')
+        
+        objects = ProductItem.objects.filter()
+        print(objects)
+        
         if image_data:
             api_url = os.environ.get('API_QR_SCAN_URL')
             response = requests.post(api_url, data={'image': image_data})
             if response.status_code == 200:
                 product_info = response.json()
-                return JsonResponse({'success': True, 'product_info': product_info['serial_number']})
+                serial_number = product_info['serial_number']
+                return JsonResponse({'success': True, 'product_info': serial_number})
             else:
                 return JsonResponse({'success': False, 'error': response.status_code})
     return render(request, 'analysis/scan_qrcode.html')
@@ -248,3 +261,12 @@ def scan_qrcode(request):
 def product_item_detail(request, serial_number):
     item = get_object_or_404(ProductItem, serial_number=serial_number)
     return render(request, 'analysis/product_item_detail.html', {'item': item})
+
+def movements(request):
+    return render(request, 'analysis/movements.html')
+
+def reports(request):
+    return render(request, 'analysis/reports.html')
+
+def settings(request):
+    return render(request, 'analysis/settings.html')
