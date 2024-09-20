@@ -55,6 +55,9 @@ cover/
 *.mo
 *.pot
 
+# Notes
+notes.txt
+
 # Images
 *.jpg
 *.jpeg

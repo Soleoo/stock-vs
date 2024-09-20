@@ -43,6 +43,15 @@
             margin-right: 270px;
             padding: 20px;
         }
+        @media (max-width: 768px) {
+            .content {
+                margin-left: 0;
+                margin-right: 0;
+            }
+            .sidebar {
+                display: none;
+            }
+        }
         .notifications {
             position: fixed;
             top: 60px;
@@ -52,6 +61,15 @@
             background-color: #f8f9fa;
             border-left: 1px solid #dee2e6;
             padding-top: 20px;
+        }
+        @media (max-width: 768px) {
+            .notifications {
+                position: static;
+                width: 100%;
+                height: auto;
+                border-left: none;
+                border-top: 1px solid #dee2e6;
+            }
         }
         .card {
             transition: all 0.3s ease-in-out;
@@ -83,6 +101,30 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'index' %}"><i class="bi bi-house-door"></i> Home</a>
                     </li>
+                    <li class="nav-item d-lg-none">
+                        <a class="nav-link" href="{% url 'product_list' %}"><i class="bi bi-box-seam"></i> Produtos</a>
+                    </li>
+                    <li class="nav-item d-lg-none">
+                        <a class="nav-link" href="{% url 'movements' %}"><i class="bi bi-arrow-left-right"></i> Movimentações</a>
+                    </li>
+                    <li class="nav-item d-lg-none">
+                        <a class="nav-link" href="{% url 'reports' %}"><i class="bi bi-bar-chart"></i> Relatórios</a>
+                    </li>
+                    <li class="nav-item d-lg-none">
+                        <a class="nav-link" href="#"><i class="bi bi-people"></i> Clientes</a>
+                    </li>
+                    <li class="nav-item d-lg-none">
+                        <a class="nav-link" href="#"><i class="bi bi-truck"></i> Fornecedores</a>
+                    </li>
+                    <li class="nav-item d-lg-none">
+                        <a class="nav-link" href="#"><i class="bi bi-receipt"></i> Pedidos</a>
+                    </li>
+                    <li class="nav-item d-lg-none">
+                        <a class="nav-link" href="{% url 'settings' %}"><i class="bi bi-gear"></i> Configurações</a>
+                    </li>
+                    <li class="nav-item d-lg-none">
+                        <a class="nav-link" href="#"><i class="bi bi-life-preserver"></i> Suporte</a>
+                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-person-circle"></i> Profile
@@ -99,7 +141,7 @@
         </div>
     </nav>
 
-    <div class="sidebar">
+    <div class="sidebar d-none d-lg-block">
         <nav class="nav flex-column">
             <a class="nav-link" href="{% url 'product_list' %}"><i class="bi bi-box-seam"></i> Produtos</a>
             <a class="nav-link" href="{% url 'movements' %}"><i class="bi bi-arrow-left-right"></i> Movimentações</a>
@@ -124,7 +166,9 @@
     <div class="notifications">
         <div class="container">
             <h5>Notificações</h5>
+            <!-- Notificações aqui -->
             <h5>Log de Atividades</h5>
+            <!-- Log de atividades aqui -->
         </div>
     </div>
 
